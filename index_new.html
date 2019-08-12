@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <style>
+    .el-header {
+      background-color: #B3C0D1;
+      color: #333;
+      line-height: 60px;
+    }
+
+    .el-aside {
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" class="news-index">
+    <el-row :gutter="0">
+      <el-col class="nav">
+        <el-col class="nav-bar" :sx="22" :sm="22" :md="22" :lg="16">
+          <div class="nav-bar-body">
+            <div class="nav-bar-inner">
+              <div id="logo">
+                <a href="/">
+                  <img src="@/assets/logo.png" alt style="top: -8px;position: absolute;left: 0;" />
+                </a>
+              </div>
+            </div>
+            <div class="navmenu">
+              <template>
+                <el-tabs v-model="activeName" @tab-click="handleClick">
+                  <el-tab-pane v-for="item in taglists" :key="item.alias_name" :label="item.name"
+                    :name="item.alias_name" data-ripple></el-tab-pane>
+                </el-tabs>
+                <div v-if="!userinfo">
+                  <a href="/user/login">
+                    <el-button type="primary" icon="el-icon-user" id="login" style="margin-right: 10px">登陆</el-button>
+                  </a>
+                  <a href="/user/register">
+                    <el-button type="primary" icon="el-icon-edit" id="register">注册</el-button>
+                  </a>
+                </div>
+
+                <div v-else class="nav-avatar">
+                  <el-menu class="el-menu-demo" mode="horizontal">
+                    <el-submenu index="2">
+                      <template slot="title">
+                        <a href="javascript:;">
+                          <img :src="userinfo.avatar" class="layui-nav-img" />
+                        </a>
+                      </template>
+                      <el-menu-item index="2-3" class="el-icon-position" @click="logout">退出</el-menu-item>
+                    </el-submenu>
+                  </el-menu>
+                </div>
+              </template>
+            </div>
+          </div>
+        </el-col>
+      </el-col>
+      <el-col :xs="24" :sm="22" :md="22" :lg="16" class="container_article">
+        <div>
+          <div class="layui-row layui-col-space20 contentTop" style="margin-top:10px">
+            <div class="layui-col-sm8">
+              <div class="layui-carousel" id="newsIndex">
+                <el-carousel :interval="4000" height="400px">
+                  <el-carousel-item v-for="item in slideList.big" :key="item.id">
+                    <div>
+                      <a :href="/details/+item.id">
+                        <img :src="item.cover_img_url" />
+                        <p id="txt">
+                          <span>{{item.title}}</span>
+                        </p>
+                      </a>
+                    </div>
+                  </el-carousel-item>
+                </el-carousel>
+              </div>
+            </div>
+            <div class="layui-col-xs6 layui-col-sm4"  v-for="item in slideList.small" :key="item.id">
+              <div class="banner-img">
+                <a :href="/details/ + item.id">
+                  <img :src="item.cover_img_url" />
+                  <div>
+                    <p>
+                      <span>{{item.category.name}}</span>
+                      {{item.title}}
+                    </p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>          <div class="grid-content bg-purple container">
+            <div class="layui-row layui-col-space20 contentBot">
+              <div class="layui-col-md8 index-list">
+                <div v-if="!articleList.length" style="text-align:center; color:#999">还没有文章呢～</div>
+                <ul class="newsList">
+                  <li v-for="item in articleList" :key="item.id">
+                    <a class="img" :href="'/details/'+item.id">
+                      <img :src="item.cover_img_url" />
+                    </a>
+                    <div class="txt">
+                      <a :href="'/details/'+item.id">{{item.title}}</a>
+                      <div class="label">
+                        <span>{{item.category.name}}</span>
+                        {{item.user.name}}
+                        <b>{{item.created_at}}</b>
+                      </div>
+                      <p class="cont" v-if="item.description.length > 100">{{item.description.substring(0, 100)+'...'}}</p>
+                      <p class="cont" v-else>{{item.description}}</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="layui-col-md4 index-side">
+                <div class="newsSide">
+                  <h2>{{title}}</h2>
+                  <ul>
+                    <li v-for="item in hotNewsList" :key="item.id">
+                      <a :href="'/details/'+item.id">
+                        <span>
+                          <img :src="item.cover_img_url" />
+                        </span>
+                        <p class="txt">{{item.title}}</p>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+                        </div>
+            <div class="scrollbottomtip">
+              <p :class="{ scrolltip: scrolltip }" style="position:relative;top:-15px;height:24px;"></p>
+              <div :class="{scrollload:scrollload,scrollloadlast:scrollloadlast}">
+                <p>数据加载中</p>
+                <i class="el-icon-loading"></i>
+              </div>
+            </div>
+            <p :class="{'hide':lastpage}" class="lastpagetip">已经到底部啦~</p>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+    <div class="footer">京ICP备180398**号</div>
+  </div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data: function () {
+      return { visible: false }
+    }
+  })
+</script>
+
+</html>
