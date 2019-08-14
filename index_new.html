@@ -6,15 +6,6 @@
   <!-- import CSS -->
   <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
   <style>
-    .el-header {
-      background-color: #B3C0D1;
-      color: #333;
-      line-height: 60px;
-    }
-
-    .el-aside {
-      color: #333;
-    }
   </style>
 </head>
 
@@ -65,7 +56,17 @@
       </el-col>
       <el-col :xs="24" :sm="22" :md="22" :lg="16" class="container_article">
         <div>
-          <div class="layui-row layui-col-space20 contentTop" style="margin-top:10px">
+          <transition name="fade">
+            <div v-if="isLoading" class="lds-css ng-scope loading-position">
+              <div style="width:100%;height:100%" class="lds-bars">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+            </transition>
+              <div class="layui-row layui-col-space20 contentTop" style="margin-top:10px">
             <div class="layui-col-sm8">
               <div class="layui-carousel" id="newsIndex">
                 <el-carousel :interval="4000" height="400px">
@@ -95,7 +96,8 @@
                 </a>
               </div>
             </div>
-          </div>          <div class="grid-content bg-purple container">
+          </div>          
+          <div class="grid-content bg-purple container">
             <div class="layui-row layui-col-space20 contentBot">
               <div class="layui-col-md8 index-list">
                 <div v-if="!articleList.length" style="text-align:center; color:#999">还没有文章呢～</div>
